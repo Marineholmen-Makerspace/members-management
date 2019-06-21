@@ -1,0 +1,13 @@
+runtime: go112
+
+handlers:
+  - url: /_wh/stripe
+    script: auto
+
+  - url: /status
+    script: auto
+
+  - url: /.*
+    static_files: index.html
+    upload: index.html
+

@@ -1,0 +1,10 @@
+{
+  "Stripe": {
+    "Secret": "sk_live_....",
+    "SigningSecret": "whsec_..."
+  },
+  "FabMan": {
+    "Account": 0,
+    "Token": "00000000-0000-4000-0000-000000000000"
+  }
+}
