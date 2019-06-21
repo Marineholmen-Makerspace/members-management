@@ -1,0 +1,82 @@
+@startuml
+actor Member as M
+participant MembershipWorks as MW
+participant Stripe as S
+participant M4M
+participant FabMan as FM
+
+
+M ->> MW : Sign-up
+
+activate MW
+MW -> S : Create Customer & Subscription
+
+activate S
+MW <-- S : OK
+MW ->> MW : Send welcome email
+M <-- MW : Sign-up complete
+deactivate MW
+
+S ->> M4M : Event: customer.subscription.created
+
+activate M4M
+ S <- M4M : Get customer configuration
+ activate S
+    S --> M4M : Customer
+ deactivate S
+
+ M4M -> FM : Get a package
+ activate FM
+ M4M <-- FM : Package\n(or error when not found)
+ deactivate FM
+
+ alt when package does not exist
+    M4M -> FM : Create a package
+    activate FM
+    M4M <-- FM : Package
+    deactivate FM
+ end
+
+ M4M -> FM : Get a member
+ activate FM
+ M4M <-- FM : Member\n(o error when not found)
+ deactivate FM
+
+ alt when member does not exist
+     M4M -> FM : Create a member
+     activate FM
+     M4M <-- FM : Member
+     deactivate FM
+
+     M4M ->> FM : Send invite email
+     activate FM
+     M4M <-- FM : OK
+     deactivate FM
+ end
+
+ M4M -> FM : Get member's packages
+ activate FM
+ M4M <-- FM : Member's packages
+ deactivate FM
+
+ alt when member package missing
+    M4M -> FM : Create Member Package
+    activate FM
+    M4M <-- FM : MemberPackage
+    deactivate FM
+
+ end
+
+ alt when member package end date does not match Stripe's subscription
+    M4M -> FM : Update Member Package with new end date
+    activate FM
+    M4M <-- FM : MemberPackage
+    deactivate FM
+ end
+
+ S <-- M4M : OK
+ deactivate S
+deactivate M4M
+
+
+@enduml
